@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link, useParams
+  Routes, Route, Link, useNavigate, useMatch
 } from 'react-router-dom';
 
 const Menu = () => {
@@ -29,9 +28,7 @@ const AnecdoteList = ({ anecdotes }) => (
   </div>
 );
 
-const Anecdote = ({ anecdotes }) => {
-  const id = useParams().id;
-  const anecdote = anecdotes.find(a => a.id === Number(id));
+const Anecdote = ({ anecdote }) => {
   return (
     <div>
       <h2>{anecdote.content}</h2>
@@ -52,7 +49,7 @@ const About = () => (
 
     <p>Software engineering is full of excellent anecdotes, at this app you can find the best and add more.</p>
   </div>
-)
+);
 
 const Footer = () => (
   <div>
@@ -60,23 +57,25 @@ const Footer = () => (
 
     See <a href='https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js'>https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js</a> for the source code.
   </div>
-)
+);
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const [content, setContent] = useState('');
+  const [author, setAuthor] = useState('');
+  const [info, setInfo] = useState('');
 
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     props.addNew({
       content,
       author,
       info,
       votes: 0
-    })
-  }
+    });
+    navigate('/');
+  };
 
   return (
     <div>
@@ -98,8 +97,7 @@ const CreateNew = (props) => {
       </form>
     </div>
   )
-
-}
+};
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -120,10 +118,17 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setShowNotification(true);
+    setNotification(`a new anecdote ${anecdote.content} created!`);
+    setTimeout(() => {
+      setShowNotification(false);
+      setNotification('');
+    }, 5000);
   };
 
   const anecdoteById = (id) =>
@@ -140,22 +145,29 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a));
   };
 
+  const match = useMatch('/anecdotes/:id');
+  const anecdote = match
+    ? anecdotes.find(a => a.id === Number(match.params.id))
+    : null;
+
   return (
-    <Router>
+    <div>
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
+        {showNotification &&
+        <p>{notification}</p>}
       </div>
       <Routes>
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
-        <Route path='/anecdotes/:id' element={<Anecdote anecdotes={anecdotes} />} />
+        <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdote} />} />
         <Route path='/create' element={<CreateNew addNew={addNew} />} />
         <Route path='/about' element={<About />} />
       </Routes>
       <div>
         <Footer />
       </div>
-    </Router>
+    </div>
   )
 };
 
