@@ -62,9 +62,12 @@ const Footer = () => (
 );
 
 const CreateNew = (props) => {
-  const content = useField('text');
-  const author = useField('text');
-  const info = useField('text');
+  // The return value of the UseField hook is an object that contains the values: 
+  // type, value and onChange. These values are destructured (...content), 
+  // but the parameter "return" is omitted and retrieved separately as variables named resetContent, resetAuthor and resetInfo.
+  const { reset: resetContent, ...content } = useField('text');
+  const { reset: resetAuthor, ...author } = useField('text');
+  const { reset: resetInfo, ...info } = useField('text');
 
   const navigate = useNavigate();
 
@@ -80,9 +83,9 @@ const CreateNew = (props) => {
   };
 
   const handleReset = () => {
-    content.reset();
-    author.reset();
-    info.reset();
+    resetContent();
+    resetAuthor();
+    resetInfo();
   };
 
   return (
@@ -91,15 +94,15 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name={'content'} type={content.type} value={content.value} onChange={content.onChange} />
+          <input {...content} onChange={content.onChange} />
         </div>
         <div>
           author
-          <input name={'author'} type={author.type} value={author.value} onChange={author.onChange} />
+          <input {...author} onChange={author.onChange} />
         </div>
         <div>
           url for more info
-          <input name={'info'} type={info.type} value={info.value} onChange={info.onChange} />
+          <input {...info} onChange={info.onChange} />
         </div>
         <button>create</button>
         <button type='button' onClick={handleReset}>reset</button>
