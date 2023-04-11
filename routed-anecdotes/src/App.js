@@ -64,7 +64,7 @@ const Footer = () => (
 const CreateNew = (props) => {
   // The return value of the UseField hook is an object that contains the values: 
   // type, value and onChange. These values are destructured (...content), 
-  // but the parameter "return" is omitted and retrieved separately as variables named resetContent, resetAuthor and resetInfo.
+  // but the parameter "reset" is omitted and retrieved separately as variables named resetContent, resetAuthor and resetInfo.
   const { reset: resetContent, ...content } = useField('text');
   const { reset: resetAuthor, ...author } = useField('text');
   const { reset: resetInfo, ...info } = useField('text');
